@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>biz.daich.commons</groupId>
-	<artifactId>daich.common.tools</artifactId>
+	<artifactId>boris.common.tools</artifactId>
 	<version>1.0.1</version>
 	<description>general purpose useful functionality that to be used here and there</description>
 	<name>biz.daich.common.tools</name>
