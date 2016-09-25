@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- log4j internal messages with level WARN or above only -->
+<!-- check the configuration file every 1 second -->
+<Configuration
+    status="WARN"
+    monitorInterval="1">
+    <Appenders>
+        <Console
+            name="Console"
+            target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%-4.4r %-5.5d{mm:ss} [%-10.10t] %-5.5level %-20.20logger{1.}.%-10.10M:%-4.4L - %msg}{STYLE=Logback}%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="WARN">
+            <AppenderRef ref="Console" />
+        </Root>
+        <Logger
+            name="biz.daich.common"
+            additivity="false"
+            level="ALL">
+            <AppenderRef ref="Console" />
+        </Logger>
+    </Loggers>
+</Configuration>
