@@ -28,6 +28,11 @@
 		</developer>
 	</developers>
 
+	<!-- github https://github.com/BorisDaich/biz.daich.commons.git -->
+	<scm>
+		<url>https://github.com/BorisDaich/biz.daich.commons.git</url>
+	</scm>
+
 	<!-- Spring Boot -->
 	<dependencyManagement>
 		<dependencies>
@@ -236,18 +241,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!-- github https://github.com/BorisDaich/biz.daich.commons.git -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>internal-repo-snapshot</id>
-			<url>${artifactory.url.internal.snapshot}</url>
-		</snapshotRepository>
-		<repository>
-			<id>internal-repo-release</id>
-			<url>${artifactory.url.internal.release}</url>
-		</repository>
-	</distributionManagement>
 
 
 
