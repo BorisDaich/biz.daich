@@ -35,234 +35,246 @@ import com.google.gson.stream.JsonWriter;
 public class GsonTools
 {
 
-    /**
-     * static instance of Gson to use right away. Initialized with getDefaultGson()
-     */
-    public static final Gson gson = getDefaultGson();
+	/**
+	 * static instance of Gson to use right away. Initialized with getDefaultGson()
+	 */
+	public static final Gson gson = getDefaultGson();
 
-    /**
-     * implementation of Gson JsonSerializer for java.util.Date that converts the Date to a long milliseconds since epoch
-     *
-     * @author Boris Daich
-     */
-    public static final class GsonSerializerDateToEpochMili implements JsonSerializer<Date>
-    {
-        @Override
-        public JsonElement serialize(Date d, Type typeOfId, JsonSerializationContext context)
-        {
-            return new JsonPrimitive(d.getTime());
-        }
-    }
+	/**
+	 * Convenience method - Print any object as a pretty JSON. Use for debug. Not cheap.
+	 *
+	 * @param o
+	 *            - any object to be printed
+	 * @return String - a pretty print JSON
+	 */
+	public static String print(Object o)
+	{
+		return gson.toJson(o);
+	}
 
-    /**
-     * Always created new instance that has: <br>
-     * pretty printing <br>
-     * serialize nulls <br>
-     * serialize and deserialize java.util.Date as long milliseconds from epoch<br>
-     *
-     * @return Gson instance
-     */
-    public static Gson getDefaultGson()
-    {
-        return getDefaultGsonBuilder().create();
-        //return new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-    }
+	/**
+	 * implementation of Gson JsonSerializer for java.util.Date that converts the Date to a long milliseconds since epoch
+	 *
+	 * @author Boris Daich
+	 */
+	public static final class GsonSerializerDateToEpochMili implements JsonSerializer<Date>
+	{
+		@Override
+		public JsonElement serialize(Date d, Type typeOfId, JsonSerializationContext context)
+		{
+			return new JsonPrimitive(d.getTime());
+		}
+	}
 
-    /**
-     * Initialize a Builder that has: <br>
-     * pretty printing <br>
-     * serialize nulls <br>
-     * serialize and deserialize java.util.Date as long milliseconds from epoch<br>
-     * <p>
-     * used by the getDefaultGson()
-     *
-     * @return GsonBuilder instance
-     */
-    public static GsonBuilder getDefaultGsonBuilder()
-    {
-        // Creates the json object which will manage the information received
-        GsonBuilder builder = new GsonBuilder().setPrettyPrinting().serializeNulls();
+	/**
+	 * Always created new instance that has: <br>
+	 * pretty printing <br>
+	 * serialize nulls <br>
+	 * serialize and deserialize java.util.Date as long milliseconds from epoch<br>
+	 *
+	 * @return Gson instance
+	 */
+	public static Gson getDefaultGson()
+	{
+		return getDefaultGsonBuilder().create();
+		//return new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+	}
 
-        JsonDeserializer<Date> jds = new GsonDeserializerEpochMiliToDate();
+	/**
+	 * Initialize a Builder that has: <br>
+	 * pretty printing <br>
+	 * serialize nulls <br>
+	 * serialize and deserialize java.util.Date as long milliseconds from epoch<br>
+	 * <p>
+	 * used by the getDefaultGson()
+	 *
+	 * @return GsonBuilder instance
+	 */
+	public static GsonBuilder getDefaultGsonBuilder()
+	{
+		// Creates the json object which will manage the information received
+		GsonBuilder builder = new GsonBuilder().setPrettyPrinting().serializeNulls();
 
-        JsonSerializer<Date> js = new GsonSerializerDateToEpochMili();
-        // Register an adapter to manage the date types as long values
-        builder.registerTypeAdapter(Date.class, jds);
-        builder.registerTypeAdapter(Date.class, js);
-        builder.registerTypeAdapterFactory(new ClassTypeAdapterFactory());
+		JsonDeserializer<Date> jds = new GsonDeserializerEpochMiliToDate();
 
-        return builder;
-    }
+		JsonSerializer<Date> js = new GsonSerializerDateToEpochMili();
+		// Register an adapter to manage the date types as long values
+		builder.registerTypeAdapter(Date.class, jds);
+		builder.registerTypeAdapter(Date.class, js);
+		builder.registerTypeAdapterFactory(new ClassTypeAdapterFactory());
 
-    /**
-     * implementation of Gson JsonDeserializer for java.util.Date that converts a long milliseconds since epoch to the java.util.Date
-     *
-     * @author Boris Daich
-     */
+		return builder;
+	}
 
-    public static final class GsonDeserializerEpochMiliToDate implements JsonDeserializer<Date>
-    {
-        @Override
-        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
-        {
-            return new Date(json.getAsJsonPrimitive().getAsLong());
-        }
-    }
+	/**
+	 * implementation of Gson JsonDeserializer for java.util.Date that converts a long milliseconds since epoch to the java.util.Date
+	 *
+	 * @author Boris Daich
+	 */
 
-    /**
-     * A formatter for ISO 8601 compliant timestamps.
-     */
-    public static final DateFormat ISO8601_DATE_FORMAT;                                        //    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    /**
-     * DateFormat implementation that format a Date as a String of the form "yyyy-MM-dd'T'HH:mm:ss.SSSX" with the miliseconds at the end
-     */
-    public static final DateFormat ISO8601_DATE_FORMAT_MILI;                                   //    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    /**
-     * The ISO8601 DATE format string with milliseconds
-     */
-    public static final String     ISO8601_DATE_FORMAT_STR_MILI = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
-    /**
-     * The ISO8601 DATE format string without milliseconds
-     */
-    public static final String     ISO8601_DATE_FORMAT_STR      = "yyyy-MM-dd'T'HH:mm:ssX";
+	public static final class GsonDeserializerEpochMiliToDate implements JsonDeserializer<Date>
+	{
+		@Override
+		public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+		{
+			return new Date(json.getAsJsonPrimitive().getAsLong());
+		}
+	}
 
-    static
-    {
-        ISO8601_DATE_FORMAT = new SimpleDateFormat(ISO8601_DATE_FORMAT_STR, Locale.US);
-        ISO8601_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+	/**
+	 * A formatter for ISO 8601 compliant timestamps.
+	 */
+	public static final DateFormat	ISO8601_DATE_FORMAT;																																	                                        //    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	/**
+	 * DateFormat implementation that format a Date as a String of the form "yyyy-MM-dd'T'HH:mm:ss.SSSX" with the miliseconds at the end
+	 */
+	public static final DateFormat	ISO8601_DATE_FORMAT_MILI;																														                                   //    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	/**
+	 * The ISO8601 DATE format string with milliseconds
+	 */
+	public static final String		ISO8601_DATE_FORMAT_STR_MILI	= "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+	/**
+	 * The ISO8601 DATE format string without milliseconds
+	 */
+	public static final String		ISO8601_DATE_FORMAT_STR			= "yyyy-MM-dd'T'HH:mm:ssX";
 
-        ISO8601_DATE_FORMAT_MILI = new SimpleDateFormat(ISO8601_DATE_FORMAT_STR_MILI, Locale.US);
-        ISO8601_DATE_FORMAT_MILI.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
+	static
+	{
+		ISO8601_DATE_FORMAT = new SimpleDateFormat(ISO8601_DATE_FORMAT_STR, Locale.US);
+		ISO8601_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-    /**
-     * implementation of Gson's JsonSerializer for java.util.Date to the ISO 8601 compliant timestamps string with milliseconds
-     *
-     * @author Boris Daich
-     */
-    public static class GsonSerializerDateToISO8601WithMilli implements JsonSerializer<Date>
-    {
-        @Override
-        public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext)
-        {
-            String dateFormatAsString = ISO8601_DATE_FORMAT_MILI.format(date);
-            return new JsonPrimitive(dateFormatAsString);
-        }
+		ISO8601_DATE_FORMAT_MILI = new SimpleDateFormat(ISO8601_DATE_FORMAT_STR_MILI, Locale.US);
+		ISO8601_DATE_FORMAT_MILI.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
-    }
+	/**
+	 * implementation of Gson's JsonSerializer for java.util.Date to the ISO 8601 compliant timestamps string with milliseconds
+	 *
+	 * @author Boris Daich
+	 */
+	public static class GsonSerializerDateToISO8601WithMilli implements JsonSerializer<Date>
+	{
+		@Override
+		public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext)
+		{
+			String dateFormatAsString = ISO8601_DATE_FORMAT_MILI.format(date);
+			return new JsonPrimitive(dateFormatAsString);
+		}
 
-    /**
-     * in case the ISO 8601 has milliseconds they will be taken else will not
-     */
-    public static class GsonDeserializerISO8601ToDate implements JsonDeserializer<Date>
-    {
-        @Override
-        public synchronized Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
-        {
-            try
-            {
-                final String dateStr = jsonElement.getAsString();
-                if (dateStr.contains("."))
-                {
-                    return ISO8601_DATE_FORMAT_MILI.parse(dateStr);
-                }
-                else
-                {
-                    return ISO8601_DATE_FORMAT.parse(dateStr);
-                }
-            }
-            catch (ParseException e)
-            {
-                throw new JsonSyntaxException(jsonElement.getAsString(), e);
-            }
-        }
-    }
+	}
 
-    /**
-     * Just formats the JSON string. If string is not valid JSON the string as is.
-     *
-     * @author Boris Daich
-     * @param uglyJSONString
-     *            - the string to format
-     * @return the formated string
-     */
+	/**
+	 * in case the ISO 8601 has milliseconds they will be taken else will not
+	 */
+	public static class GsonDeserializerISO8601ToDate implements JsonDeserializer<Date>
+	{
+		@Override
+		public synchronized Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+		{
+			try
+			{
+				final String dateStr = jsonElement.getAsString();
+				if (dateStr.contains("."))
+				{
+					return ISO8601_DATE_FORMAT_MILI.parse(dateStr);
+				}
+				else
+				{
+					return ISO8601_DATE_FORMAT.parse(dateStr);
+				}
+			}
+			catch (ParseException e)
+			{
+				throw new JsonSyntaxException(jsonElement.getAsString(), e);
+			}
+		}
+	}
 
-    public static String prettyPrintJSON(String uglyJSONString)
-    {
-        if (uglyJSONString == null) return null;
-        try
-        {
-            return gson.toJson(new JsonParser().parse(uglyJSONString));
-        }
-        catch (JsonSyntaxException e)
-        {
-            return uglyJSONString;
-        }
-    }
+	/**
+	 * Just formats the JSON string. If string is not valid JSON the string as is.
+	 *
+	 * @author Boris Daich
+	 * @param uglyJSONString
+	 *            - the string to format
+	 * @return the formated string
+	 */
 
-    /**
-     * make sure that instances of the java.lang.Class are serialized as full name of the class and on deserialization
-     * are created as a references to a real classes <br>
-     * <p>
-     * from here http://stackoverflow.com/questions/29188127/android-attempted-to-serialize-forgot-to-register-a-type-adapter
-     * <p>
-     * is claims that for Gson 2.3.1: <br>
-     * need to register the TypeAdapterFactory to your Gson Builder.
-     * gsonBuilder.registerTypeAdapterFactory(new ClassTypeAdapterFactory());
-     * AFAIK you have to use a TypeAdapterFactory. A directly registered TypeAdapter
-     * gsonBuilder.registerTypeAdapter(Class.class, new ClassTypeAdapter());
-     * seems to be ignored when an object of type Class is encountered.
-     */
-    public static class ClassTypeAdapterFactory implements TypeAdapterFactory
-    {
+	public static String prettyPrintJSON(String uglyJSONString)
+	{
+		if (uglyJSONString == null) return null;
+		try
+		{
+			return gson.toJson(new JsonParser().parse(uglyJSONString));
+		}
+		catch (JsonSyntaxException e)
+		{
+			return uglyJSONString;
+		}
+	}
 
-        @Override
-        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken)
-        {
-            if (!Class.class.isAssignableFrom(typeToken.getRawType())) { return null; }
-            @SuppressWarnings("unchecked") TypeAdapter<T> typeAdapter = (TypeAdapter<T>) new ClassTypeAdapter();
-            return typeAdapter;
-        }
-    }
+	/**
+	 * make sure that instances of the java.lang.Class are serialized as full name of the class and on deserialization
+	 * are created as a references to a real classes <br>
+	 * <p>
+	 * from here http://stackoverflow.com/questions/29188127/android-attempted-to-serialize-forgot-to-register-a-type-adapter
+	 * <p>
+	 * is claims that for Gson 2.3.1: <br>
+	 * need to register the TypeAdapterFactory to your Gson Builder.
+	 * gsonBuilder.registerTypeAdapterFactory(new ClassTypeAdapterFactory());
+	 * AFAIK you have to use a TypeAdapterFactory. A directly registered TypeAdapter
+	 * gsonBuilder.registerTypeAdapter(Class.class, new ClassTypeAdapter());
+	 * seems to be ignored when an object of type Class is encountered.
+	 */
+	public static class ClassTypeAdapterFactory implements TypeAdapterFactory
+	{
 
-    /**
-     * Type adapter that takes care of java.lang.Class are serialized as full name of the class and on deserialization
-     * are created as a references to a real classes <br>
-     * <p>
-     * from here http://stackoverflow.com/questions/29188127/android-attempted-to-serialize-forgot-to-register-a-type-adapter
-     */
-    public static class ClassTypeAdapter extends TypeAdapter<Class<?>>
-    {
-        @Override
-        public void write(JsonWriter jsonWriter, Class<?> clazz) throws IOException
-        {
-            if (clazz == null)
-            {
-                jsonWriter.nullValue();
-                return;
-            }
-            jsonWriter.value(clazz.getName());
-        }
+		@Override
+		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken)
+		{
+			if (!Class.class.isAssignableFrom(typeToken.getRawType())) { return null; }
+			@SuppressWarnings("unchecked") TypeAdapter<T> typeAdapter = (TypeAdapter<T>) new ClassTypeAdapter();
+			return typeAdapter;
+		}
+	}
 
-        @Override
-        public Class<?> read(JsonReader jsonReader) throws IOException
-        {
-            if (jsonReader.peek() == JsonToken.NULL)
-            {
-                jsonReader.nextNull();
-                return null;
-            }
-            Class<?> clazz = null;
-            try
-            {
-                clazz = Class.forName(jsonReader.nextString());
-            }
-            catch (ClassNotFoundException exception)
-            {
-                throw new IOException(exception);
-            }
-            return clazz;
-        }
-    }
+	/**
+	 * Type adapter that takes care of java.lang.Class are serialized as full name of the class and on deserialization
+	 * are created as a references to a real classes <br>
+	 * <p>
+	 * from here http://stackoverflow.com/questions/29188127/android-attempted-to-serialize-forgot-to-register-a-type-adapter
+	 */
+	public static class ClassTypeAdapter extends TypeAdapter<Class<?>>
+	{
+		@Override
+		public void write(JsonWriter jsonWriter, Class<?> clazz) throws IOException
+		{
+			if (clazz == null)
+			{
+				jsonWriter.nullValue();
+				return;
+			}
+			jsonWriter.value(clazz.getName());
+		}
+
+		@Override
+		public Class<?> read(JsonReader jsonReader) throws IOException
+		{
+			if (jsonReader.peek() == JsonToken.NULL)
+			{
+				jsonReader.nextNull();
+				return null;
+			}
+			Class<?> clazz = null;
+			try
+			{
+				clazz = Class.forName(jsonReader.nextString());
+			}
+			catch (ClassNotFoundException exception)
+			{
+				throw new IOException(exception);
+			}
+			return clazz;
+		}
+	}
 
 }
