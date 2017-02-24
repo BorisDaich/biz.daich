@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>biz.daich.commons</groupId>
 	<artifactId>boris.common.tools</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<description>general purpose useful functionality that to be used here and there</description>
 	<name>biz.daich.common.tools</name>
 	<packaging>jar</packaging>
@@ -17,6 +17,11 @@
 		<!-- Versions of different packages -->
 		<!-- log4j -->
 		<log4j.version>RELEASE</log4j.version>
+        <!-- Spring Boot -->
+		<spring-boot.version>1.5.1.RELEASE</spring-boot.version>
+		<!--  For some unknown reason the Spring Boot is based on an old Hibernate version so for some of the code of the library to work we need this -->
+		<hibernate.version>5.2.8.Final</hibernate.version>
+
 	</properties>
 
 	<developers>
@@ -128,7 +133,13 @@
 			<version>${log4j.version}</version>
 		</dependency>
 
-		<!-- SPRING DEPENDENCIES -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+        <!-- SPRING DEPENDENCIES -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
